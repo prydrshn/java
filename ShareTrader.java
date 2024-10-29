@@ -1,9 +1,8 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ShareTrader {
-    // Static variable to store the maximum profit
-    static int maxProfit;
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
@@ -11,48 +10,51 @@ public class ShareTrader {
         System.out.print("Enter the number of stock prices: ");
         int size = scanner.nextInt();
         
+        if (size < 2) {
+            System.out.println("Not enough prices to make a transaction.");
+            return;
+        }
+
         // Input: the stock prices
         int[] prices = new int[size];
         System.out.println("Enter the stock prices:");
         for (int i = 0; i < size; i++) {
             prices[i] = scanner.nextInt();
+            if (prices[i] < 0) {
+                System.out.println("Stock prices must be non-negative.");
+                return;
+            }
         }
 
-        // Calculate and display the maximum profit
-        System.out.println("Maximum profit: " + findMaxProfit(prices));
+        // Calculate and display the maximum profit and transactions
+        int maxProfit = findMaxProfit(prices);
+        System.out.println("Maximum profit: " + maxProfit);
     }
 
-    // Static method to calculate the maximum profit
     public static int findMaxProfit(int[] prices) {
         int n = prices.length;
         if (n < 2) {
             return 0; // Not enough prices to make a transaction
         }
 
-        // Initialize profit arrays
-        int[] profit1 = new int[n]; // Profit after the first transaction
-        int[] profit2 = new int[n]; // Profit after the second transaction
+        List<String> transactions = new ArrayList<>();
+        int totalProfit = 0;
 
-        // Calculate profit for the first transaction
-        int minPrice = prices[0];
         for (int i = 1; i < n; i++) {
-            minPrice = Math.min(minPrice, prices[i]);
-            profit1[i] = Math.max(profit1[i - 1], prices[i] - minPrice);
+            // If the price is going up, consider it a buying and selling opportunity
+            if (prices[i] > prices[i - 1]) {
+                int buyPrice = prices[i - 1];
+                int sellPrice = prices[i];
+                totalProfit += (sellPrice - buyPrice);
+                transactions.add("Buy at " + buyPrice + ", sell at " + sellPrice);
+            }
         }
 
-        // Calculate profit for the second transaction
-        int maxPrice = prices[n - 1];
-        for (int i = n - 2; i >= 0; i--) {
-            maxPrice = Math.max(maxPrice, prices[i]);
-            profit2[i] = Math.max(profit2[i + 1], maxPrice - prices[i]);
+        // Output the transactions
+        for (String transaction : transactions) {
+            System.out.println(transaction);
         }
 
-        // Find the maximum profit from two transactions
-        maxProfit = 0;
-        for (int i = 0; i < n; i++) {
-            maxProfit = Math.max(maxProfit, profit1[i] + profit2[i]);
-        }
-
-        return maxProfit;
+        return totalProfit;
     }
 }
