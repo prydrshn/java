@@ -1,127 +1,107 @@
-// Abstract class Robber
-abstract class Robber {
+import java.util.Scanner;
 
-    // Abstract method that prints "MScAI&ML"
-    abstract void RobbingClass();
-
-    // Abstract methods for different types of houses
-    abstract int RowHouses(int[] money);
-    abstract int RoundHouses(int[] money);
-    abstract int SquareHouse(int[] money);
-    abstract int MuliHouseBuilding(int[] money);
-
-    // Default method that prints "I love MachineLearning."
-    public void MachineLearning() {
-        System.out.println("I love MachineLearning.");
-    }
-}
-
-// JAVAProfessionalRobber class inherits from Robber and implements abstract methods
-class JAVAProfessionalRobber extends Robber {
-
-    // Implementing the abstract method RobbingClass
-    @Override
-    void RobbingClass() {
-        System.out.println("MScAI&ML");
-    }
-
-    // Implementing the RowHouses method
-    @Override
-    int RowHouses(int[] money) {
-        if (money == null || money.length == 0) {
-            return 0;
-        }
-        if (money.length == 1) {
-            return money[0];
-        }
-
-        // Dynamic programming approach for house robbery problem
-        int prev1 = 0, prev2 = 0;
-        for (int amount : money) {
-            int temp = prev1;
-            prev1 = Math.max(prev2 + amount, prev1);
-            prev2 = temp;
-        }
-        return prev1;
-    }
-
-    // Implementing the RoundHouses method
-    @Override
-    int RoundHouses(int[] money) {
-        if (money == null || money.length == 0) {
-            return 0;
-        }
-        if (money.length == 1) {
-            return money[0];
-        }
-
-        // Helper function for non-circular (normal) rowhouses
-        int simpleRobbery = robSimple(money, 0, money.length - 2); // Exclude the last house
-        int circularRobbery = robSimple(money, 1, money.length - 1); // Exclude the first house
-        return Math.max(simpleRobbery, circularRobbery);
-    }
-
-    // Helper method for robbing non-circular houses (simple rowhouses)
-    private int robSimple(int[] money, int start, int end) {
-        int prev1 = 0, prev2 = 0;
-        for (int i = start; i <= end; i++) {
-            int temp = prev1;
-            prev1 = Math.max(prev2 + money[i], prev1);
-            prev2 = temp;
-        }
-        return prev1;
-    }
-
-    // Implementing the SquareHouse method
-    @Override
-    int SquareHouse(int[] money) {
-        return RowHouses(money);  // Since SquareHouse problem is the same as RowHouses
-    }
-
-    // Implementing the MuliHouseBuilding method
-    @Override
-    int MuliHouseBuilding(int[] money) {
-        if (money == null || money.length == 0) {
-            return 0;
-        }
-
-        // Dynamic programming approach, considering alternate houses
-        int prev1 = 0, prev2 = 0;
-        for (int amount : money) {
-            int temp = prev1;
-            prev1 = Math.max(prev2 + amount, prev1);
-            prev2 = temp;
-        }
-        return prev1;
-    }
-}
-
-// Main class with a test case
 public class Main {
     public static void main(String[] args) {
-        // Create an instance of JAVAProfessionalRobber
-        JAVAProfessionalRobber robber = new JAVAProfessionalRobber();
+        Scanner scanner = new Scanner(System.in);
+        Library library = new Library();
+
+        // Menu for interacting with the library system
+        while (true) {
+            System.out.println("Library Management System");
+            System.out.println("1. Add a Book");
+            System.out.println("2. Borrow a Book");
+            System.out.println("3. Return a Book");
+            System.out.println("4. Display All Books");
+            System.out.println("5. Exit");
+            System.out.print("Please enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume the newline character after nextInt()
+            
+            switch (choice) {
+                case 1:  // Add a Book
+                    addBook(scanner, library);
+                    break;
+                case 2:  // Borrow a Book
+                    borrowBook(scanner, library);
+                    break;
+                case 3:  // Return a Book
+                    returnBook(scanner, library);
+                    break;
+                case 4:  // Display All Books
+                    library.displayAllBooks();
+                    break;
+                case 5:  // Exit
+                    System.out.println("Exiting the Library Management System.");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice, please try again.");
+            }
+        }
+    }
+
+    // Method to add a book to the library based on user input
+    private static void addBook(Scanner scanner, Library library) {
+        // Collect input from the user for book details
+        System.out.print("Enter Book ID: ");
+        int bookId = scanner.nextInt();
+        scanner.nextLine();  // Consume the newline character
         
-        // Call the RobbingClass method
-        robber.RobbingClass();
+        System.out.print("Enter Title: ");
+        String title = scanner.nextLine();
+        
+        System.out.print("Enter Author: ");
+        String author = scanner.nextLine();
 
-        // Test RowHouses
-        int[] rowHousesMoney = {2, 7, 9, 3, 1};
-        System.out.println("Max money that can be robbed from RowHouses: " + robber.RowHouses(rowHousesMoney));
+        System.out.println("Select Book Type: ");
+        System.out.println("1. General Book");
+        System.out.println("2. Reference Book");
+        System.out.println("3. Fiction Book");
+        System.out.println("4. Periodical");
+        System.out.print("Please enter your choice: ");
+        int bookType = scanner.nextInt();
+        scanner.nextLine();  // Consume the newline character
 
-        // Test RoundHouses
-        int[] roundHousesMoney = {2, 3, 2};
-        System.out.println("Max money that can be robbed from RoundHouses: " + robber.RoundHouses(roundHousesMoney));
+        switch (bookType) {
+            case 1:  // General Book
+                library.addBook(new Book(bookId, title, author));
+                break;
+            case 2:  // Reference Book
+                System.out.print("Enter Edition Number: ");
+                int edition = scanner.nextInt();
+                scanner.nextLine();  // Consume the newline character
+                library.addBook(new ReferenceBook(bookId, title, author, edition));
+                break;
+            case 3:  // Fiction Book
+                System.out.print("Enter Genre: ");
+                String genre = scanner.nextLine();
+                library.addBook(new FictionBook(bookId, title, author, genre));
+                break;
+            case 4:  // Periodical
+                System.out.print("Enter Edition Number: ");
+                int periodicalEdition = scanner.nextInt();
+                scanner.nextLine();  // Consume the newline character
+                System.out.print("Enter Issue Frequency (e.g., Monthly, Weekly): ");
+                String frequency = scanner.nextLine();
+                library.addBook(new Periodical(bookId, title, author, periodicalEdition, frequency));
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
 
-        // Test SquareHouse (same logic as RowHouses)
-        int[] squareHousesMoney = {5, 1, 1, 5};
-        System.out.println("Max money that can be robbed from SquareHouses: " + robber.SquareHouse(squareHousesMoney));
+    // Borrow Book method
+    private static void borrowBook(Scanner scanner, Library library) {
+        System.out.print("Enter Book ID to borrow: ");
+        int bookId = scanner.nextInt();
+        library.borrowBook(bookId);
+    }
 
-        // Test MuliHouseBuilding
-        int[] muliHousesMoney = {1, 2, 3, 1};
-        System.out.println("Max money that can be robbed from MuliHouseBuilding: " + robber.MuliHouseBuilding(muliHousesMoney));
-
-        // Call the MachineLearning method
-        robber.MachineLearning();
+    // Return Book method
+    private static void returnBook(Scanner scanner, Library library) {
+        System.out.print("Enter Book ID to return: ");
+        int bookId = scanner.nextInt();
+        library.returnBook(bookId);
     }
 }
