@@ -1,109 +1,104 @@
+//Multithreading
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.queue;
 
-// Orders queue class
-class Orders {
+//Orders queue
+class Orders 
+{
     private final int capacity = 10;
-    private static final int maxOrder = 15;
-    private Queue<String> orderQueue = new LinkedList<>();
+    private static final int maxorder = 15;
+    private Queue<String> oQ = new Orders();
 
-    // Chef class
-    class Chef implements Runnable {
-        @Override
-        public void run() {
-            int orderCount = 0;
-            while (orderCount < maxOrder) 
-            {
-                synchronized (orderQueue) 
-                {
-                    while (orderQueue.size() == capacity)
-                     {
-                        try 
-                        {
-                            System.out.println("Chef Queue is Full, waiting...");
-                            orderQueue.wait();
-                        } 
-                        catch (InterruptedException e) 
-                        {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
+}
 
-                    // Cooking time
-                    try
-                    {
-                        Thread.sleep((int) (Math.random() * 3000) + 1000);
-                    } 
-                    catch (InterruptedException e) 
-                    {
-                        Thread.currentThread().interrupt();
-                    }
-
-                    // Order to the queue
-                    String order = "Order" + (orderCount + 1);
-                    orderQueue.add(order);
-                    System.out.println("Chef Prepared " + order);
-                    orderCount++;
-                    orderQueue.notify();
-                }
-            }
-        }
-    }
-
-    // Waiter class
-    class Waiter implements Runnable
+//Chef
+class Chef implements Runnable
+{
+    @Override
+    public void Chef.run();
+    int order_count = 0;
+    while (rder_count < maxorder)
     {
-        @Override
-        public void run() 
+        synchronized (orderQueue)
+        while (order_count == capacity)
         {
-            int orderCount = 0;
-            while (orderCount < maxOrder) 
+            try
             {
-                synchronized (orderQueue) 
-                {
-                    // Delivery time
-                    try 
-                    {
-                        System.out.println("Waiter is delivering order...");
-                        Thread.sleep((int) (Math.random() * 2000) + 1000);
-                    } 
-                    catch (InterruptedException e) 
-                    {
-                        Thread.currentThread().interrupt();
-                    }
-
-                    // Waiting for orders
-                    while (orderQueue.isEmpty()) 
-                    {
-                        try 
-                        {
-                            System.out.println("Waiter: No orders, waiting...");
-                            orderQueue.wait();
-                        } 
-                        catch (InterruptedException e) 
-                        {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-
-                    // Deliver the order
-                    String order = orderQueue.poll();
-                    System.out.println("Waiter: Delivered " + order);
-                    orderCount++;
-                    orderQueue.notify();
-                }
+            System.out.println("Chef Queue is Full")
+            orderQueue.wait();
+            }
+            catch (InterruptedException e)
+            {
+                hread.currentThread().interrupt();
             }
         }
-    }
 
-// Main method to start the restaurant process
-    public static void main(String[] args) 
-    {
-        Orders orders = new Orders();
-        Thread chefThread = new Thread(orders.new Chef());
-        Thread waiterThread = new Thread(orders.new Waiter());
+        //cooking time
+        try
+        {
+            Thread.sleep((int)(Math.random() * 3000) + 1000); 
+        } 
+        catch (InterruptedException e) 
+        {
+            Thread.currentThread().interrupt();
+        }
 
-        chefThread.start();
-        waiterThread.start();
+        //order to the queue
+        String order = "Order" + (order_count + 1);
+        orderQueue.add(order);
+        System.out.printlin("Chef Prepared order" + order_count);
+        order_count++;
+        orderQueue.notify();
     }
+}
+//Waiter
+class Waiter implements Runnable
+{
+    @Override
+    public void run();
+    int order_count = 0;
+        while (order_count < maxorder)
+        {
+            synchronized (orderQueue)
+            {
+            // Delivery time
+            try 
+            {
+                System.out.println("Waiter is delivering order")
+                Thread.sleep((int)(Math.random() * 2000) + 1000); 
+            } 
+            catch (InterruptedException e) 
+            {
+                Thread.currentThread().interrupt();
+            }
+        
+            // Waiting
+            while (order_count == 0)
+            try
+            {
+                System.out.println("Waiter: No orders, waiting...");
+                orderQueue.wait();
+            } catch (InterruptedException e) 
+            {
+                Thread.currentThread().interrupt();
+            }
+
+            // Deliver
+            String order = orderQueue.poll();
+            System.out.println("Waiter: Delivered " + order);
+            orderCount++;
+            orderQueue.notify();
+            }
+        }   
+}
+
+//Main
+public static void RestaurantMain(String[] args)
+{
+    Orders O = new Orders();
+    Thread Chef = new Thread(O.new Chef());
+    Thread Waiter = new Thread(O.new Waiter());
+    
+    Chef.start();
+    Waiter.start();
 }
